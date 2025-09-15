@@ -1,17 +1,43 @@
-// Mobile Navigation
-const hamburger = document.querySelector('.hamburger');
-const navMenu = document.querySelector('.nav-menu');
-const navLinks = document.querySelectorAll('.nav-link');
+// Sidebar Navigation
+const sidebar = document.querySelector('.sidebar');
+const sidebarToggle = document.querySelector('.sidebar-toggle');
+const sidebarLinks = document.querySelectorAll('.sidebar-link');
+const body = document.body;
 
-hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navMenu.classList.toggle('active');
+// Toggle sidebar expansion
+sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('expanded');
+    body.classList.toggle('sidebar-expanded');
 });
 
-navLinks.forEach(link => {
+// Close sidebar when clicking a link (on mobile)
+sidebarLinks.forEach(link => {
     link.addEventListener('click', () => {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
+        if (window.innerWidth < 768) {
+            sidebar.classList.remove('expanded');
+            body.classList.remove('sidebar-expanded');
+        }
+    });
+});
+
+// Update active link based on scroll position
+window.addEventListener('scroll', () => {
+    let current = '';
+    const sections = document.querySelectorAll('section');
+
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (window.pageYOffset >= sectionTop - 200) {
+            current = section.getAttribute('id');
+        }
+    });
+
+    sidebarLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href').slice(1) === current) {
+            link.classList.add('active');
+        }
     });
 });
 
@@ -29,18 +55,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Enhanced navbar effects
-window.addEventListener('scroll', () => {
-    const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 50) {
-        navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-        navbar.style.backdropFilter = 'blur(20px)';
-        navbar.style.boxShadow = '0 4px 20px rgba(0,0,0,0.1)';
-    } else {
-        navbar.style.background = 'rgba(255, 255, 255, 0.95)';
-        navbar.style.boxShadow = 'none';
-    }
-});
 
 // Video Modal Functionality
 const videoModal = document.getElementById('videoModal');
