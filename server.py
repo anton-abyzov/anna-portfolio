@@ -7,7 +7,7 @@ import sys
 # Change to the directory containing the HTML files
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-PORT = 8007
+PORT = 8008
 
 class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
