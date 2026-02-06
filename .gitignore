@@ -1,0 +1,19 @@
+.env
+.env.*
+node_modules/
+.DS_Store
+
+# Birthday video project (large media files)
+birthday-video/
+
+# IDE
+.idea/
+.vscode/
+
+# SpecWeave
+.specweave/
+
+# Playwright
+.playwright-mcp/
+playwright-report/
+test-results/
