@@ -1,99 +1,138 @@
 const { test, expect } = require('@playwright/test');
 
-test.describe('Music Library Modal', () => {
-  test('should open library modal', async ({ page }) => {
+test.describe('Chill-out Library Panel', () => {
+  test('should open library panel from performances button', async ({ page }) => {
     await page.goto('/');
 
     await page.click('#libraryToggleBtn');
 
-    const modal = page.locator('#libraryModal');
-    await expect(modal).toHaveClass(/active/);
+    const panel = page.locator('#libraryPanel');
+    await expect(panel).toHaveClass(/active/);
   });
 
-  test('should display all tracks by default', async ({ page }) => {
+  test('should open library panel from sidebar button', async ({ page }) => {
     await page.goto('/');
-    await page.click('#libraryToggleBtn');
 
-    const cards = page.locator('.library-card');
-    await expect(cards).toHaveCount(6);
+    await page.click('#sidebarLibraryBtn');
+
+    const panel = page.locator('#libraryPanel');
+    await expect(panel).toHaveClass(/active/);
   });
 
-  test('should filter by Romantic category', async ({ page }) => {
+  test('should close library panel with close button', async ({ page }) => {
     await page.goto('/');
-    await page.click('#libraryToggleBtn');
 
-    await page.click('[data-filter="romantic"]');
+    await page.click('#sidebarLibraryBtn');
+    await expect(page.locator('#libraryPanel')).toHaveClass(/active/);
 
-    const cards = page.locator('.library-card');
+    await page.click('#libraryPanelClose');
+    await expect(page.locator('#libraryPanel')).not.toHaveClass(/active/);
+  });
+
+  test('should display all chillout tracks by default', async ({ page }) => {
+    await page.goto('/');
+    await page.click('#sidebarLibraryBtn');
+
+    const cards = page.locator('.chillout-card');
+    await expect(cards).toHaveCount(28);
+  });
+
+  test('should filter by Lofi Beats category', async ({ page }) => {
+    await page.goto('/');
+    await page.click('#sidebarLibraryBtn');
+
+    await page.click('[data-filter="lofi"]');
+
+    const cards = page.locator('.chillout-card');
     const count = await cards.count();
-    expect(count).toBe(3);
+    expect(count).toBe(4);
   });
 
-  test('should filter by Baroque category', async ({ page }) => {
+  test('should filter by Classical category', async ({ page }) => {
     await page.goto('/');
-    await page.click('#libraryToggleBtn');
+    await page.click('#sidebarLibraryBtn');
 
-    await page.click('[data-filter="baroque"]');
+    await page.click('[data-filter="classical"]');
 
-    const cards = page.locator('.library-card');
+    const cards = page.locator('.chillout-card');
     const count = await cards.count();
-    expect(count).toBe(1);
-    await expect(cards.first()).toContainText('Bach');
+    expect(count).toBe(6);
+    await expect(cards.first()).toContainText('Beethoven');
   });
 
   test('should search tracks', async ({ page }) => {
     await page.goto('/');
-    await page.click('#libraryToggleBtn');
+    await page.click('#sidebarLibraryBtn');
 
-    await page.fill('#librarySearch', 'chopin');
+    await page.fill('#librarySearch', 'lofi girl');
 
-    const cards = page.locator('.library-card');
+    const cards = page.locator('.chillout-card');
     const count = await cards.count();
-    expect(count).toBe(1);
-    await expect(cards.first()).toContainText('Chopin');
+    expect(count).toBe(2);
   });
 
   test('should play track from library', async ({ page }) => {
     await page.goto('/');
-    await page.click('#libraryToggleBtn');
+    await page.click('#sidebarLibraryBtn');
 
-    await page.click('.library-card:first-child');
+    await page.click('.chillout-card:first-child');
 
-    const modal = page.locator('#libraryModal');
-    await expect(modal).not.toHaveClass(/active/);
+    const panel = page.locator('#libraryPanel');
+    await expect(panel).not.toHaveClass(/active/);
 
     const player = page.locator('#musicPlayer');
     await expect(player).toHaveClass(/visible/);
   });
 
-  test('should close modal with close button', async ({ page }) => {
+  test('should close panel with close button', async ({ page }) => {
     await page.goto('/');
-    await page.click('#libraryToggleBtn');
+    await page.click('#sidebarLibraryBtn');
 
-    await page.click('.library-modal .modal-close');
+    await page.click('#libraryPanelClose');
 
-    const modal = page.locator('#libraryModal');
-    await expect(modal).not.toHaveClass(/active/);
+    const panel = page.locator('#libraryPanel');
+    await expect(panel).not.toHaveClass(/active/);
   });
 
-  test('should close modal with Escape key', async ({ page }) => {
+  test('should close panel with Escape key', async ({ page }) => {
     await page.goto('/');
-    await page.click('#libraryToggleBtn');
+    await page.click('#sidebarLibraryBtn');
 
     await page.keyboard.press('Escape');
 
-    const modal = page.locator('#libraryModal');
-    await expect(modal).not.toHaveClass(/active/);
+    const panel = page.locator('#libraryPanel');
+    await expect(panel).not.toHaveClass(/active/);
   });
 
-  test('should show featured tracks only', async ({ page }) => {
+  test('should close panel when clicking backdrop', async ({ page }) => {
     await page.goto('/');
-    await page.click('#libraryToggleBtn');
+    await page.click('#sidebarLibraryBtn');
 
-    await page.click('[data-filter="featured"]');
+    await page.click('#libraryBackdrop', { force: true });
 
-    const cards = page.locator('.library-card');
+    const panel = page.locator('#libraryPanel');
+    await expect(panel).not.toHaveClass(/active/);
+  });
+
+  test('should filter by Nature Sounds category', async ({ page }) => {
+    await page.goto('/');
+    await page.click('#sidebarLibraryBtn');
+
+    await page.click('[data-filter="nature"]');
+
+    const cards = page.locator('.chillout-card');
     const count = await cards.count();
-    expect(count).toBe(2);
+    expect(count).toBe(4);
+  });
+
+  test('should show LIVE badges on live streams', async ({ page }) => {
+    await page.goto('/');
+    await page.click('#sidebarLibraryBtn');
+
+    await page.click('[data-filter="lofi"]');
+
+    const liveBadges = page.locator('.chillout-live-badge');
+    const count = await liveBadges.count();
+    expect(count).toBe(4);
   });
 });

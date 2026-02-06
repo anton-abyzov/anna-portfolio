@@ -139,6 +139,15 @@
                 </a>
             </li>
         </ul>
+        <div class="sidebar-library-section">
+            <button class="sidebar-library-btn" id="sidebarLibraryBtn" data-tooltip="Chill-out Library">
+                <span class="sidebar-library-icon">
+                    <i class="ph ph-headphones" style="font-size: 20px;"></i>
+                </span>
+                <span class="sidebar-library-text">Chill-out</span>
+                <span class="sidebar-library-glow"></span>
+            </button>
+        </div>
         <button class="sidebar-toggle">
             <span></span>
             <span></span>
@@ -340,10 +349,9 @@
                     </button>
                     <button class="library-toggle-btn" id="libraryToggleBtn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                            <path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
                         </svg>
-                        Browse Library
+                        Chill-out Library
                     </button>
                 </div>
             </div>
@@ -866,7 +874,10 @@
     <div id="queuePanel" class="queue-panel">
         <div class="queue-header">
             <h4>Up Next</h4>
-            <button class="queue-clear-btn" id="queueClearBtn">Clear</button>
+            <div class="queue-header-actions">
+                <button class="queue-clear-btn" id="queueClearBtn">Clear</button>
+                <button class="queue-close-btn" id="queueCloseBtn" title="Close">&times;</button>
+            </div>
         </div>
         <div class="queue-list" id="queueList">
             <!-- Dynamically populated -->
@@ -890,7 +901,7 @@
     </div>
 
     <!-- Hidden YouTube Player -->
-    <div id="ytPlayerContainer" style="position:fixed;bottom:-1000px;left:-1000px;width:1px;height:1px;overflow:hidden;pointer-events:none;">
+    <div id="ytPlayerContainer" style="position:fixed;bottom:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none;z-index:-1;">
         <div id="ytPlayer"></div>
     </div>
 
@@ -908,29 +919,41 @@
         </div>
     </div>
 
-    <!-- Music Library Modal -->
-    <div id="libraryModal" class="library-modal">
-        <div class="modal-overlay"></div>
-        <div class="modal-content library-content">
-            <button class="modal-close">&times;</button>
+    <!-- Chill-out Library Panel (Full-screen) -->
+    <div id="libraryBackdrop" class="library-backdrop"></div>
+    <div id="libraryPanel" class="library-panel">
+        <button class="library-panel-close" id="libraryPanelClose">&times;</button>
 
-            <div class="modal-header library-header">
-                <h3>Music Library</h3>
+        <div class="library-panel-scroll">
+            <div class="library-panel-header chillout-header">
+                <div class="chillout-title-row">
+                    <div>
+                        <h3>Chill-out Library</h3>
+                        <p class="chillout-subtitle">Curated music for studying & relaxation</p>
+                    </div>
+                    <button class="chillout-shuffle-btn" id="chilloutShuffleBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+                        Shuffle Play
+                    </button>
+                </div>
                 <div class="library-search-wrapper">
-                    <input type="text" id="librarySearch" placeholder="Search tracks..." class="library-search">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="librarySearch" placeholder="Search music, channels, or categories..." class="library-search">
                 </div>
             </div>
 
-            <div class="library-filters">
-                <button class="filter-tab active" data-filter="all">All Tracks</button>
-                <button class="filter-tab" data-filter="romantic">Romantic</button>
-                <button class="filter-tab" data-filter="baroque">Baroque</button>
-                <button class="filter-tab" data-filter="contemporary">Contemporary</button>
-                <button class="filter-tab" data-filter="featured">Featured</button>
+            <div class="library-filters chillout-filters">
+                <button class="filter-tab active" data-filter="all">All</button>
+                <button class="filter-tab" data-filter="lofi">&#127925; Lofi Beats</button>
+                <button class="filter-tab" data-filter="focus">&#129504; Deep Focus</button>
+                <button class="filter-tab" data-filter="relaxing">&#127807; Relaxing</button>
+                <button class="filter-tab" data-filter="nature">&#127795; Nature Sounds</button>
+                <button class="filter-tab" data-filter="classical">&#127929; Classical</button>
+                <button class="filter-tab" data-filter="frequencies">&#127744; Frequencies</button>
             </div>
 
-            <div class="library-grid" id="libraryGrid">
-                <!-- Dynamically populated track cards -->
+            <div class="library-grid chillout-grid" id="libraryGrid">
+                <!-- Dynamically populated: hero + category sections -->
             </div>
         </div>
     </div>

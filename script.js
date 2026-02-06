@@ -419,6 +419,86 @@
     revealElements.forEach(el => revealObserver.observe(el));
 
     // ============================================
+    // Cursor Glow Effect (Apple-style)
+    // ============================================
+    const cursorGlow = document.createElement('div');
+    cursorGlow.style.cssText = `
+        position: fixed;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(6,182,212,0.06) 0%, rgba(236,72,153,0.03) 40%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+        transform: translate(-50%, -50%);
+        transition: opacity 0.3s ease;
+        opacity: 0;
+    `;
+    document.body.appendChild(cursorGlow);
+
+    let glowX = 0, glowY = 0, curX = 0, curY = 0;
+    document.addEventListener('mousemove', (e) => {
+        glowX = e.clientX;
+        glowY = e.clientY;
+        cursorGlow.style.opacity = '1';
+    });
+
+    document.addEventListener('mouseleave', () => {
+        cursorGlow.style.opacity = '0';
+    });
+
+    function animateGlow() {
+        curX += (glowX - curX) * 0.08;
+        curY += (glowY - curY) * 0.08;
+        cursorGlow.style.left = curX + 'px';
+        cursorGlow.style.top = curY + 'px';
+        requestAnimationFrame(animateGlow);
+    }
+    animateGlow();
+
+    // ============================================
+    // Floating Sparkle Particles (Hero Section)
+    // ============================================
+    const heroSection = document.querySelector('.hero-section');
+    if (heroSection) {
+        const sparkleContainer = document.createElement('div');
+        sparkleContainer.style.cssText = `
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1; overflow: hidden;
+        `;
+        heroSection.appendChild(sparkleContainer);
+
+        function createSparkle() {
+            const spark = document.createElement('div');
+            const size = Math.random() * 4 + 2;
+            const colors = ['#06b6d4', '#ec4899', '#f59e0b', '#8b5cf6'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const startX = Math.random() * 100;
+            const duration = Math.random() * 8 + 6;
+            const delay = Math.random() * 4;
+
+            spark.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                background: ${color};
+                border-radius: 50%;
+                left: ${startX}%;
+                bottom: -10px;
+                opacity: 0;
+                box-shadow: 0 0 ${size * 2}px ${color}40;
+                animation: sparkleRise ${duration}s ${delay}s ease-in-out infinite;
+            `;
+            sparkleContainer.appendChild(spark);
+        }
+
+        for (let i = 0; i < 15; i++) {
+            createSparkle();
+        }
+    }
+
+    // ============================================
     // Video Modal
     // ============================================
     const videoModal = document.getElementById('videoModal');
@@ -565,7 +645,7 @@
     }
 
     // ============================================
-    // Music Library Data
+    // Music Library Data (Anna's Performances)
     // ============================================
     const musicLibrary = [
         {
@@ -642,6 +722,55 @@
         }
     ];
 
+    // ============================================
+    // Chill-out Library Data (Background Music)
+    // ============================================
+    const chilloutCategories = {
+        lofi: { label: 'Lofi Beats', icon: '\u{1F3B5}', description: 'Chill beats to study/relax to' },
+        focus: { label: 'Deep Focus', icon: '\u{1F9E0}', description: 'Concentration & productivity music' },
+        relaxing: { label: 'Relaxing', icon: '\u{1F33F}', description: 'Stress relief & ambient music' },
+        nature: { label: 'Nature Sounds', icon: '\u{1F333}', description: 'Ambient environmental sounds' },
+        classical: { label: 'Classical', icon: '\u{1F3B9}', description: 'Timeless classical compositions' },
+        frequencies: { label: 'Frequencies', icon: '\u{1F300}', description: 'Binaural beats & healing tones' }
+    };
+
+    const chilloutLibrary = [
+        // Lofi Beats
+        { id: 'lofi-1', videoId: 'jfKfPfyJRdk', title: 'lofi hip hop radio - beats to relax/study to', channel: 'Lofi Girl', duration: 'LIVE', category: 'lofi', isLive: true, views: '41K watching' },
+        { id: 'lofi-2', videoId: 'rUxyKA_-grg', title: 'lofi hip hop radio - beats to sleep/chill to', channel: 'Lofi Girl', duration: 'LIVE', category: 'lofi', isLive: true, views: '15K watching' },
+        { id: 'lofi-3', videoId: '5yx6BWlEVcY', title: 'Chillhop Radio - jazzy & lofi hip hop beats', channel: 'Chillhop Music', duration: 'LIVE', category: 'lofi', isLive: true, views: '8K watching' },
+        { id: 'lofi-4', videoId: 'lP26UCnoH9s', title: 'Coffee Shop Radio - lofi & jazzy beats', channel: 'STEEZYASFUCK', duration: 'LIVE', category: 'lofi', isLive: true, views: '5K watching' },
+        // Deep Focus
+        { id: 'focus-1', videoId: 'lTRiuFIWV54', title: 'Deep Focus Music To Improve Concentration', channel: 'Greenred Productions', duration: '11:54:56', category: 'focus', isLive: false, views: '25M' },
+        { id: 'focus-2', videoId: 'sjkrrmBnpGE', title: '4 Hours of Ambient Study Music', channel: 'Quiet Quest', duration: '4:00:00', category: 'focus', isLive: false, views: '12M' },
+        { id: 'focus-3', videoId: 'oPVte6aMprI', title: 'Productive Morning - Study Music', channel: 'The Soul of Wind', duration: '3:28:15', category: 'focus', isLive: false, views: '8M' },
+        { id: 'focus-4', videoId: 'WPni755-Krg', title: 'Brain Power - Focus Music', channel: 'Yellow Brick Cinema', duration: '3:00:12', category: 'focus', isLive: false, views: '45M' },
+        // Relaxing
+        { id: 'relax-1', videoId: '1fueZCTYkpA', title: 'Relaxing Sleep Music + Rain Sounds', channel: 'Soothing Relaxation', duration: '8:00:00', category: 'relaxing', isLive: false, views: '150M' },
+        { id: 'relax-2', videoId: '77ZozI0rw7w', title: 'Peaceful Piano & Soft Rain', channel: 'OCB Relax Music', duration: '3:00:00', category: 'relaxing', isLive: false, views: '22M' },
+        { id: 'relax-3', videoId: 'hlWiI4xVXKY', title: 'Beautiful Relaxing Music for Stress Relief', channel: 'Soothing Relaxation', duration: '3:17:42', category: 'relaxing', isLive: false, views: '85M' },
+        { id: 'relax-4', videoId: '9Q634rbsypE', title: 'Calm Piano Music 24/7', channel: 'Relaxing Music', duration: 'LIVE', category: 'relaxing', isLive: true, views: '2.1M' },
+        // Nature Sounds
+        { id: 'nature-1', videoId: 'WHPEKLQID4U', title: 'Relaxing Ocean Waves', channel: 'Relaxing White Noise', duration: '10:00:00', category: 'nature', isLive: false, views: '87M' },
+        { id: 'nature-2', videoId: 'xNN7iTA57jM', title: 'Forest Sounds - Birds Singing', channel: 'Nature Sounds', duration: '8:00:00', category: 'nature', isLive: false, views: '35M' },
+        { id: 'nature-3', videoId: 'q76bMs-NwRk', title: 'Rain Sounds for Sleeping', channel: 'Rain Sounds', duration: '10:00:00', category: 'nature', isLive: false, views: '120M' },
+        { id: 'nature-4', videoId: 'nDq6TstdEi8', title: 'Thunderstorm Sounds for Sleep', channel: 'The Relaxed Guy', duration: '8:00:00', category: 'nature', isLive: false, views: '56M' },
+        // Classical
+        { id: 'classical-1', videoId: '4Tr0otuiQuU', title: 'Beethoven - Moonlight Sonata (Full)', channel: 'HALIDONMUSIC', duration: '15:03', category: 'classical', isLive: false, views: '250M' },
+        { id: 'classical-2', videoId: 'Rb0UmrCXxVA', title: 'Mozart - Classical Music for Brain Power', channel: 'HALIDONMUSIC', duration: '3:04:46', category: 'classical', isLive: false, views: '45M' },
+        { id: 'classical-3', videoId: 'WJ8RVjm49hE', title: 'Chopin - Nocturnes (Complete)', channel: 'Classical Music Only', duration: '1:55:38', category: 'classical', isLive: false, views: '18M' },
+        { id: 'classical-4', videoId: '1prweT95Mo0', title: 'Bach - Cello Suite No. 1', channel: 'Yo-Yo Ma', duration: '2:41:09', category: 'classical', isLive: false, views: '62M' },
+        { id: 'classical-5', videoId: 'CvFH_6DNRCY', title: 'Debussy - Clair de Lune', channel: 'Rousseau', duration: '5:14', category: 'classical', isLive: false, views: '85M' },
+        { id: 'classical-6', videoId: 'GRxofEmo3HA', title: 'Vivaldi - The Four Seasons', channel: 'HALIDONMUSIC', duration: '42:35', category: 'classical', isLive: false, views: '180M' },
+        // Frequencies
+        { id: 'freq-1', videoId: 'NPVX75VIpqg', title: '432 Hz - Deep Healing Frequency', channel: 'Meditative Mind', duration: '8:00:00', category: 'frequencies', isLive: false, views: '28M' },
+        { id: 'freq-2', videoId: 'dCIA6XVe2nc', title: '528 Hz - DNA Repair & Transformation', channel: 'PowerThoughts Meditation Club', duration: '3:00:00', category: 'frequencies', isLive: false, views: '15M' },
+        { id: 'freq-3', videoId: 'LXKRsJWqORc', title: '40 Hz Gamma Binaural Beats - Focus & Memory', channel: 'Brainwave Music', duration: '2:00:00', category: 'frequencies', isLive: false, views: '5.2M' },
+        { id: 'freq-4', videoId: 'WTr9xnvnLKo', title: 'Alpha Waves 10 Hz - Relaxation & Creativity', channel: 'Greenred Productions', duration: '3:00:00', category: 'frequencies', isLive: false, views: '8M' },
+        { id: 'freq-5', videoId: 'SyUXGfS4NyY', title: '963 Hz - Crown Chakra Activation', channel: 'Meditative Mind', duration: '2:00:00', category: 'frequencies', isLive: false, views: '12M' },
+        { id: 'freq-6', videoId: 'tJlODWp3Dso', title: 'Theta Waves 6 Hz - Deep Meditation & Sleep', channel: 'Solfeggio Frequencies', duration: '8:00:00', category: 'frequencies', isLive: false, views: '22M' }
+    ];
+
     // Music Player (YouTube IFrame API)
     // ============================================
     const playlist = [];
@@ -652,7 +781,8 @@
         ytReady: false,
         progressTimer: null,
         loadingTrack: false,
-        queue: [] // Playlist queue
+        queue: [], // Playlist queue
+        history: [] // Track history for back-navigation during shuffle
     };
 
     // Build playlist from musicLibrary
@@ -698,12 +828,15 @@
                 origin: window.location.origin
             },
             events: {
-                onReady: function() {
+                onReady: function(event) {
                     playerState.ytReady = true;
+                    event.target.unMute();
+                    event.target.setVolume(100);
                 },
                 onStateChange: function(event) {
                     if (event.data === YT.PlayerState.PLAYING) {
                         playerState.loadingTrack = false;
+                        clearTimeout(playerState.loadingTimeout);
                         playerState.isPlaying = true;
                         updatePlayIcon();
                         startProgressTimer();
@@ -726,8 +859,12 @@
         if (index < 0 || index >= playlist.length) return;
         if (!playerState.ytReady) return;
 
+        playerState.isChilloutSource = false;
         playerState.currentIndex = index;
         const track = playlist[index];
+
+        // Auto-populate queue with full playlist (Spotify-like behavior)
+        playerState.queue = playlist.slice();
 
         // Update UI
         musicTitle.textContent = track.title;
@@ -748,37 +885,134 @@
 
         // Load and play — set flag to ignore stale state changes from previous video
         playerState.loadingTrack = true;
+        clearTimeout(playerState.loadingTimeout);
+        playerState.loadingTimeout = setTimeout(function() { playerState.loadingTrack = false; }, 5000);
+        playerState.ytPlayer.unMute();
+        playerState.ytPlayer.setVolume(100);
         playerState.ytPlayer.loadVideoById(track.videoId);
         playerState.isPlaying = true;
         updatePlayIcon();
         startProgressTimer();
+        renderQueue();
     }
 
     function togglePlay() {
         if (!playerState.ytReady || playerState.currentIndex === -1) return;
 
         if (playerState.isPlaying) {
+            playerState.loadingTrack = false; // Clear loading flag on explicit pause
             playerState.ytPlayer.pauseVideo();
+            playerState.isPlaying = false;
+            updatePlayIcon();
+            stopProgressTimer();
         } else {
             playerState.ytPlayer.playVideo();
+            playerState.isPlaying = true;
+            updatePlayIcon();
+            startProgressTimer();
         }
     }
 
+    // Get the active track list based on current source
+    function getActiveSource() {
+        if (playerState.isChilloutSource && playerState.queue.length > 0) {
+            return playerState.queue;
+        }
+        return playlist;
+    }
+
+    // Play a track from the chillout queue by index
+    function playQueueTrack(index) {
+        if (index < 0 || index >= playerState.queue.length) return;
+        if (!playerState.ytReady) return;
+
+        playerState.isChilloutSource = true;
+        playerState.currentIndex = index;
+        const track = playerState.queue[index];
+
+        musicTitle.textContent = track.title;
+        musicComposer.textContent = track.composer;
+        musicThumbImg.src = 'https://img.youtube.com/vi/' + track.videoId + '/mqdefault.jpg';
+        musicThumbImg.alt = track.title;
+        musicPlayerEl.classList.add('visible');
+
+        playerState.loadingTrack = true;
+        clearTimeout(playerState.loadingTimeout);
+        playerState.loadingTimeout = setTimeout(function() { playerState.loadingTrack = false; }, 5000);
+        playerState.ytPlayer.unMute();
+        playerState.ytPlayer.setVolume(100);
+        playerState.ytPlayer.loadVideoById(track.videoId);
+        playerState.isPlaying = true;
+        updatePlayIcon();
+        startProgressTimer();
+        renderQueue();
+    }
+
     function playNext() {
-        if (playlist.length === 0) return;
-        const next = (playerState.currentIndex + 1) % playlist.length;
-        playTrack(next);
+        var source = getActiveSource();
+        if (source.length === 0) return;
+
+        // Repeat one: restart current track
+        if (playerState.repeatMode === 'one') {
+            if (playerState.ytPlayer && playerState.ytPlayer.seekTo) {
+                playerState.ytPlayer.seekTo(0);
+                playerState.ytPlayer.playVideo();
+            }
+            return;
+        }
+
+        var nextIndex;
+        if (playerState.shuffleEnabled) {
+            // Push current to history before moving
+            if (playerState.currentIndex >= 0) {
+                playerState.history.push(playerState.currentIndex);
+            }
+            // Pick a random track, avoid current if possible
+            if (source.length > 1) {
+                do {
+                    nextIndex = Math.floor(Math.random() * source.length);
+                } while (nextIndex === playerState.currentIndex);
+            } else {
+                nextIndex = 0;
+            }
+        } else {
+            nextIndex = (playerState.currentIndex + 1) % source.length;
+            if (nextIndex === 0 && playerState.repeatMode === 'off') {
+                closePlayer();
+                return;
+            }
+        }
+
+        if (playerState.isChilloutSource) {
+            playQueueTrack(nextIndex);
+        } else {
+            playTrack(nextIndex);
+        }
     }
 
     function playPrev() {
-        if (playlist.length === 0) return;
+        var source = getActiveSource();
+        if (source.length === 0) return;
+
         // If more than 3 seconds in, restart current track
         if (playerState.ytReady && playerState.ytPlayer.getCurrentTime && playerState.ytPlayer.getCurrentTime() > 3) {
             playerState.ytPlayer.seekTo(0);
             return;
         }
-        const prev = (playerState.currentIndex - 1 + playlist.length) % playlist.length;
-        playTrack(prev);
+
+        var prevIndex;
+        if (playerState.shuffleEnabled && playerState.history.length > 0) {
+            // Go back through history
+            prevIndex = playerState.history.pop();
+        } else {
+            prevIndex = (playerState.currentIndex - 1 + source.length) % source.length;
+        }
+
+        if (playerState.isChilloutSource) {
+            playQueueTrack(prevIndex);
+        } else {
+            playTrack(prevIndex);
+        }
     }
 
     function closePlayer() {
@@ -787,6 +1021,7 @@
         }
         playerState.isPlaying = false;
         playerState.currentIndex = -1;
+        playerState.history = [];
         musicPlayerEl.classList.remove('visible');
         document.querySelectorAll('.performance-card').forEach(c => c.classList.remove('now-playing'));
         document.querySelectorAll('.listen-btn').forEach(b => b.classList.remove('playing'));
@@ -798,18 +1033,24 @@
 
     function updatePlayIcon() {
         var playing = playerState.isPlaying;
-        // Cross-check with actual YouTube player state for accuracy
-        if (playerState.ytReady && playerState.ytPlayer && playerState.ytPlayer.getPlayerState) {
-            var state = playerState.ytPlayer.getPlayerState();
-            playing = (state === 1 /* PLAYING */ || state === 3 /* BUFFERING */);
-            playerState.isPlaying = playing;
-        }
         if (playing) {
             iconPlay.style.display = 'none';
             iconPause.style.display = 'block';
         } else {
             iconPlay.style.display = 'block';
             iconPause.style.display = 'none';
+        }
+        // Update sidebar library button playing indicator
+        updateSidebarLibraryIndicator(playing);
+    }
+
+    function updateSidebarLibraryIndicator(playing) {
+        if (!sidebarLibraryBtn) return;
+        var isChillout = playing && playerState.isChilloutSource;
+        if (isChillout) {
+            sidebarLibraryBtn.classList.add('is-playing');
+        } else {
+            sidebarLibraryBtn.classList.remove('is-playing');
         }
     }
 
@@ -837,7 +1078,14 @@
         var current = playerState.ytPlayer.getCurrentTime() || 0;
         var duration = playerState.ytPlayer.getDuration() || 0;
 
-        if (duration > 0) {
+        // Live streams return very large durations (>86400s = 24h)
+        var isLiveStream = duration > 86400;
+
+        if (isLiveStream) {
+            musicProgressFill.style.width = '100%';
+            musicProgressInput.value = 100;
+            musicTime.textContent = 'LIVE';
+        } else if (duration > 0) {
             var pct = (current / duration) * 100;
             musicProgressFill.style.width = pct + '%';
             musicProgressInput.value = pct;
@@ -852,7 +1100,7 @@
     musicProgressInput.addEventListener('input', function() {
         if (!playerState.ytReady || !playerState.ytPlayer.getDuration) return;
         var duration = playerState.ytPlayer.getDuration() || 0;
-        if (duration > 0) {
+        if (duration > 0 && duration <= 86400) {
             var seekTo = (this.value / 100) * duration;
             playerState.ytPlayer.seekTo(seekTo, true);
             musicProgressFill.style.width = this.value + '%';
@@ -900,60 +1148,252 @@
     });
 
     // ============================================
-    // Music Library Modal
+    // Chill-out Library Modal
     // ============================================
-    const libraryModal = document.getElementById('libraryModal');
+    const libraryPanel = document.getElementById('libraryPanel');
+    const libraryBackdrop = document.getElementById('libraryBackdrop');
+    const sidebarLibraryBtn = document.getElementById('sidebarLibraryBtn');
+    const libraryPanelClose = document.getElementById('libraryPanelClose');
     const libraryGrid = document.getElementById('libraryGrid');
     const libraryToggleBtn = document.getElementById('libraryToggleBtn');
     const librarySearch = document.getElementById('librarySearch');
     const filterTabs = document.querySelectorAll('.filter-tab');
+    const chilloutShuffleBtn = document.getElementById('chilloutShuffleBtn');
 
     let currentFilter = 'all';
     let searchQuery = '';
 
-    function renderLibraryGrid(tracks) {
-        libraryGrid.innerHTML = tracks.map((track, index) => `
-            <div class="library-card" data-index="${index}" data-era="${track.era.toLowerCase()}" data-featured="${track.featured}">
+    function renderCardHTML(track, nowPlayingId) {
+        return `
+            <div class="library-card chillout-card${track.videoId === nowPlayingId ? ' now-playing' : ''}" data-video-id="${track.videoId}" data-category="${track.category}">
                 <div class="library-card-thumb">
-                    <img src="https://img.youtube.com/vi/${track.videoId}/mqdefault.jpg" alt="${track.title}">
+                    <img src="https://img.youtube.com/vi/${track.videoId}/mqdefault.jpg" alt="${track.title}" loading="lazy">
                     <div class="library-card-play-overlay">
                         <div class="library-card-play-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                <polygon points="5 3 19 12 5 21 5 3"/>
-                            </svg>
+                            ${track.videoId === nowPlayingId
+                                ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'
+                                : '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>'
+                            }
                         </div>
                     </div>
+                    ${track.isLive ? '<span class="chillout-live-badge">LIVE</span>' : `<span class="chillout-duration-badge">${track.duration}</span>`}
                 </div>
                 <div class="library-card-info">
                     <h4 class="library-card-title">${track.title}</h4>
-                    <p class="library-card-composer">${track.composer}</p>
+                    <p class="library-card-composer">${track.channel}</p>
                     <div class="library-card-meta">
-                        <span class="meta-badge">${track.era}</span>
-                        <span class="meta-badge">${track.difficulty}</span>
-                        <span class="meta-badge">${track.duration}</span>
+                        <span class="meta-badge">${chilloutCategories[track.category].label}</span>
+                        <span class="meta-badge">${track.views}</span>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            </div>`;
+    }
 
-        // Add click handlers
-        document.querySelectorAll('.library-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const index = parseInt(card.dataset.index);
-                playTrack(index);
-                closeLibraryModal();
+    function renderChilloutGrid(tracks) {
+        if (tracks.length === 0) {
+            libraryGrid.innerHTML = '<div class="chillout-empty">No tracks found</div>';
+            return;
+        }
+
+        // Determine currently playing video ID for highlighting
+        var nowPlayingId = '';
+        if (playerState.isChilloutSource && playerState.isPlaying && playerState.queue.length > 0 && playerState.currentIndex >= 0) {
+            nowPlayingId = playerState.queue[playerState.currentIndex]?.videoId || '';
+        }
+
+        // Group tracks by category
+        var grouped = {};
+        tracks.forEach(function(track) {
+            if (!grouped[track.category]) grouped[track.category] = [];
+            grouped[track.category].push(track);
+        });
+
+        var html = '';
+
+        // Hero banner — first live track
+        var heroTrack = tracks.find(function(t) { return t.isLive; });
+        if (heroTrack) {
+            html += `
+                <div class="chillout-hero" data-video-id="${heroTrack.videoId}">
+                    <div class="chillout-hero-bg" style="background-image: url('https://img.youtube.com/vi/${heroTrack.videoId}/maxresdefault.jpg')"></div>
+                    <div class="chillout-hero-content">
+                        <span class="chillout-hero-badge">LIVE NOW</span>
+                        <div class="chillout-hero-title">${heroTrack.title}</div>
+                        <div class="chillout-hero-meta">${heroTrack.channel} &middot; ${heroTrack.views}</div>
+                    </div>
+                    <button class="chillout-hero-play">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Listen Now
+                    </button>
+                </div>`;
+        }
+
+        // Category sections with horizontal carousels
+        var categoryOrder = ['lofi', 'focus', 'relaxing', 'nature', 'classical', 'frequencies'];
+        categoryOrder.forEach(function(catKey) {
+            var catTracks = grouped[catKey];
+            if (!catTracks || catTracks.length === 0) return;
+            var cat = chilloutCategories[catKey];
+
+            html += `
+                <div class="chillout-category-section" data-cat="${catKey}">
+                    <div class="chillout-category-header">
+                        <div class="chillout-category-info">
+                            <div class="chillout-category-icon">${cat.icon}</div>
+                            <div class="chillout-category-text">
+                                <h4>${cat.label}</h4>
+                                <p>${cat.description}</p>
+                            </div>
+                        </div>
+                        <div class="chillout-category-actions">
+                            <button class="chillout-play-all-btn" data-play-cat="${catKey}">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                Play All
+                            </button>
+                            <button class="chillout-scroll-btn" data-scroll-dir="left" data-scroll-cat="${catKey}">&lsaquo;</button>
+                            <button class="chillout-scroll-btn" data-scroll-dir="right" data-scroll-cat="${catKey}">&rsaquo;</button>
+                        </div>
+                    </div>
+                    <div class="chillout-carousel" data-carousel="${catKey}">
+                        ${catTracks.map(function(track) { return renderCardHTML(track, nowPlayingId); }).join('')}
+                    </div>
+                </div>`;
+        });
+
+        libraryGrid.innerHTML = html;
+
+        // Click handlers — cards
+        document.querySelectorAll('.chillout-card').forEach(function(card) {
+            card.addEventListener('click', function() {
+                var videoId = card.dataset.videoId;
+                var track = chilloutLibrary.find(function(t) { return t.videoId === videoId; });
+                if (track) {
+                    playChilloutTrack(track);
+                    closeLibraryPanel();
+                }
+            });
+        });
+
+        // Click handler — hero banner
+        var hero = document.querySelector('.chillout-hero');
+        if (hero) {
+            hero.addEventListener('click', function() {
+                var videoId = hero.dataset.videoId;
+                var track = chilloutLibrary.find(function(t) { return t.videoId === videoId; });
+                if (track) {
+                    playChilloutTrack(track);
+                    closeLibraryPanel();
+                }
+            });
+        }
+
+        // Click handlers — Play All per category
+        document.querySelectorAll('.chillout-play-all-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var catKey = btn.dataset.playCat;
+                var catTracks = chilloutLibrary.filter(function(t) { return t.category === catKey; });
+                if (catTracks.length > 0) {
+                    playChilloutTrack(catTracks[0]);
+                    closeLibraryPanel();
+                }
+            });
+        });
+
+        // Click handlers — carousel scroll buttons
+        document.querySelectorAll('.chillout-scroll-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var dir = btn.dataset.scrollDir;
+                var catKey = btn.dataset.scrollCat;
+                var carousel = document.querySelector('[data-carousel="' + catKey + '"]');
+                if (carousel) {
+                    var scrollAmount = 240;
+                    carousel.scrollBy({ left: dir === 'right' ? scrollAmount : -scrollAmount, behavior: 'smooth' });
+                }
             });
         });
     }
 
-    function filterLibrary() {
-        let filtered = playlist;
+    function playChilloutTrack(track) {
+        playerState.isChilloutSource = true;
+        // Queue all tracks from same category for continuous play
+        const categoryTracks = chilloutLibrary
+            .filter(t => t.category === track.category)
+            .map(t => ({
+                videoId: t.videoId,
+                title: t.title,
+                composer: t.channel,
+                era: chilloutCategories[t.category].label,
+                duration: t.duration,
+                description: '',
+                tags: [t.category],
+                featured: false
+            }));
+
+        const startIndex = categoryTracks.findIndex(t => t.videoId === track.videoId);
+
+        // Replace the queue with category tracks
+        playerState.queue = categoryTracks;
+        playerState.currentIndex = startIndex >= 0 ? startIndex : 0;
+
+        // Update UI and play
+        const current = playerState.queue[playerState.currentIndex];
+        musicTitle.textContent = current.title;
+        musicComposer.textContent = current.composer;
+        musicThumbImg.src = `https://img.youtube.com/vi/${current.videoId}/mqdefault.jpg`;
+        musicPlayerEl.classList.add('visible');
+
+        if (playerState.ytReady && playerState.ytPlayer) {
+            playerState.ytPlayer.loadVideoById(current.videoId);
+            playerState.isPlaying = true;
+            iconPlay.style.display = 'none';
+            iconPause.style.display = 'inline';
+        }
+
+        renderQueue();
+    }
+
+    function shuffleChillout() {
+        playerState.isChilloutSource = true;
+        const allTracks = [...chilloutLibrary].sort(() => Math.random() - 0.5);
+        const queueTracks = allTracks.map(t => ({
+            videoId: t.videoId,
+            title: t.title,
+            composer: t.channel,
+            era: chilloutCategories[t.category].label,
+            duration: t.duration,
+            description: '',
+            tags: [t.category],
+            featured: false
+        }));
+
+        playerState.queue = queueTracks;
+        playerState.currentIndex = 0;
+
+        const current = queueTracks[0];
+        musicTitle.textContent = current.title;
+        musicComposer.textContent = current.composer;
+        musicThumbImg.src = `https://img.youtube.com/vi/${current.videoId}/mqdefault.jpg`;
+        musicPlayerEl.classList.add('visible');
+
+        if (playerState.ytReady && playerState.ytPlayer) {
+            playerState.ytPlayer.loadVideoById(current.videoId);
+            playerState.isPlaying = true;
+            iconPlay.style.display = 'none';
+            iconPause.style.display = 'inline';
+        }
+
+        renderQueue();
+        closeLibraryPanel();
+    }
+
+    function filterChilloutLibrary() {
+        let filtered = chilloutLibrary;
 
         // Apply category filter
-        if (currentFilter === 'featured') {
-            filtered = filtered.filter(t => t.featured);
-        } else if (currentFilter !== 'all') {
-            filtered = filtered.filter(t => t.era.toLowerCase() === currentFilter);
+        if (currentFilter !== 'all') {
+            filtered = filtered.filter(t => t.category === currentFilter);
         }
 
         // Apply search filter
@@ -961,39 +1401,55 @@
             const query = searchQuery.toLowerCase();
             filtered = filtered.filter(t =>
                 t.title.toLowerCase().includes(query) ||
-                t.composer.toLowerCase().includes(query) ||
-                t.tags.some(tag => tag.toLowerCase().includes(query))
+                t.channel.toLowerCase().includes(query) ||
+                chilloutCategories[t.category].label.toLowerCase().includes(query)
             );
         }
 
-        renderLibraryGrid(filtered);
+        renderChilloutGrid(filtered);
     }
 
-    function openLibraryModal() {
-        libraryModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        filterLibrary();
+    function openLibraryPanel() {
+        libraryPanel.classList.add('active');
+        libraryBackdrop.classList.add('active');
+        if (sidebarLibraryBtn) sidebarLibraryBtn.classList.add('active');
+        filterChilloutLibrary();
     }
 
-    function closeLibraryModal() {
-        libraryModal.classList.remove('active');
-        document.body.style.overflow = 'auto';
+    function closeLibraryPanel() {
+        libraryPanel.classList.remove('active');
+        libraryBackdrop.classList.remove('active');
+        if (sidebarLibraryBtn) sidebarLibraryBtn.classList.remove('active');
     }
 
-    // Event listeners
+    // Event listeners — sidebar button (primary)
+    if (sidebarLibraryBtn) {
+        sidebarLibraryBtn.addEventListener('click', () => {
+            if (libraryPanel.classList.contains('active')) {
+                closeLibraryPanel();
+            } else {
+                openLibraryPanel();
+            }
+        });
+    }
+
+    // Performances section button (secondary)
     if (libraryToggleBtn) {
-        libraryToggleBtn.addEventListener('click', openLibraryModal);
+        libraryToggleBtn.addEventListener('click', openLibraryPanel);
     }
 
-    const libraryModalClose = document.querySelector('.library-modal .modal-close');
-    const libraryModalOverlay = document.querySelector('.library-modal .modal-overlay');
-
-    if (libraryModalClose) {
-        libraryModalClose.addEventListener('click', closeLibraryModal);
+    if (chilloutShuffleBtn) {
+        chilloutShuffleBtn.addEventListener('click', shuffleChillout);
     }
 
-    if (libraryModalOverlay) {
-        libraryModalOverlay.addEventListener('click', closeLibraryModal);
+    // Close button inside panel
+    if (libraryPanelClose) {
+        libraryPanelClose.addEventListener('click', closeLibraryPanel);
+    }
+
+    // Click backdrop to close
+    if (libraryBackdrop) {
+        libraryBackdrop.addEventListener('click', closeLibraryPanel);
     }
 
     filterTabs.forEach(tab => {
@@ -1001,21 +1457,21 @@
             filterTabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             currentFilter = tab.dataset.filter;
-            filterLibrary();
+            filterChilloutLibrary();
         });
     });
 
     if (librarySearch) {
         librarySearch.addEventListener('input', (e) => {
             searchQuery = e.target.value;
-            filterLibrary();
+            filterChilloutLibrary();
         });
     }
 
-    // Escape key handler for library modal
+    // Escape key handler for library panel
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && libraryModal && libraryModal.classList.contains('active')) {
-            closeLibraryModal();
+        if (e.key === 'Escape' && libraryPanel && libraryPanel.classList.contains('active')) {
+            closeLibraryPanel();
         }
     });
 
@@ -1026,6 +1482,7 @@
     const queueList = document.getElementById('queueList');
     const queueToggleBtn = document.getElementById('queueToggleBtn');
     const queueClearBtn = document.getElementById('queueClearBtn');
+    const queueCloseBtn = document.getElementById('queueCloseBtn');
     const repeatBtn = document.getElementById('repeatBtn');
     const shuffleBtn = document.getElementById('shuffleBtn');
 
@@ -1057,18 +1514,20 @@
     function renderQueue() {
         if (!queueList) return;
 
-        queueList.innerHTML = playerState.queue.map((trackIndex, queuePosition) => {
-            const track = playlist[trackIndex];
-            const isCurrent = trackIndex === playerState.currentIndex;
+        queueList.innerHTML = playerState.queue.map((item, queuePosition) => {
+            // Support both index-based queue (original) and object-based queue (chillout)
+            const track = typeof item === 'number' ? playlist[item] : item;
+            if (!track) return '';
+            const isCurrent = queuePosition === playerState.currentIndex;
             return `
-                <div class="queue-item ${isCurrent ? 'current' : ''}" data-position="${queuePosition}" data-track="${trackIndex}">
-                    <span class="queue-item-drag">☰</span>
-                    <img class="queue-item-thumb" src="https://img.youtube.com/vi/${track.videoId}/default.jpg" alt="">
+                <div class="queue-item ${isCurrent ? 'current' : ''}" data-position="${queuePosition}" data-track="${typeof item === 'number' ? item : queuePosition}">
+                    <span class="queue-item-number">${isCurrent ? '▶' : queuePosition + 1}</span>
+                    <img class="queue-item-thumb" src="https://img.youtube.com/vi/${track.videoId}/mqdefault.jpg" alt="">
                     <div class="queue-item-info">
                         <div class="queue-item-title">${track.title}</div>
                         <div class="queue-item-composer">${track.composer}</div>
                     </div>
-                    <button class="queue-item-remove" data-remove="${queuePosition}">✕</button>
+                    <button class="queue-item-remove" data-remove="${queuePosition}" title="Remove">✕</button>
                 </div>
             `;
         }).join('');
@@ -1077,8 +1536,25 @@
         document.querySelectorAll('.queue-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 if (!e.target.closest('.queue-item-remove')) {
-                    const trackIndex = parseInt(item.dataset.track);
-                    playTrack(trackIndex);
+                    const position = parseInt(item.dataset.position);
+                    const queueItem = playerState.queue[position];
+                    if (typeof queueItem === 'number') {
+                        playTrack(queueItem);
+                    } else if (queueItem) {
+                        // Chillout track object — play directly
+                        playerState.currentIndex = position;
+                        musicTitle.textContent = queueItem.title;
+                        musicComposer.textContent = queueItem.composer;
+                        musicThumbImg.src = `https://img.youtube.com/vi/${queueItem.videoId}/mqdefault.jpg`;
+                        musicPlayerEl.classList.add('visible');
+                        if (playerState.ytReady && playerState.ytPlayer) {
+                            playerState.ytPlayer.loadVideoById(queueItem.videoId);
+                            playerState.isPlaying = true;
+                            iconPlay.style.display = 'none';
+                            iconPause.style.display = 'inline';
+                        }
+                        renderQueue();
+                    }
                 }
             });
         });
@@ -1089,6 +1565,8 @@
                 removeFromQueue(parseInt(btn.dataset.remove));
             });
         });
+
+        updateQueueCount();
     }
 
     function updateQueueCount() {
@@ -1143,62 +1621,6 @@
         }
     }
 
-    // Modified playNext to respect queue and repeat
-    function playNextWithQueue() {
-        // If repeat one, restart current
-        if (playerState.repeatMode === 'one') {
-            if (playerState.ytPlayer && playerState.ytPlayer.seekTo) {
-                playerState.ytPlayer.seekTo(0);
-                playerState.ytPlayer.playVideo();
-            }
-            return;
-        }
-
-        // Check queue first
-        if (playerState.queue.length > 0) {
-            const nextIndex = playerState.queue.shift();
-            playTrack(nextIndex);
-            renderQueue();
-            updateQueueCount();
-            return;
-        }
-
-        // No queue, check shuffle
-        if (playerState.shuffleEnabled) {
-            const randomIndex = Math.floor(Math.random() * playlist.length);
-            playTrack(randomIndex);
-            return;
-        }
-
-        // Normal next with repeat all
-        const next = (playerState.currentIndex + 1) % playlist.length;
-        if (next === 0 && playerState.repeatMode === 'off') {
-            // End of playlist, no repeat
-            closePlayer();
-        } else {
-            playTrack(next);
-        }
-    }
-
-    // Override the existing playNext function in the YT player state change handler
-    // We'll need to update the onStateChange callback
-    const originalOnStateChange = function(event) {
-        if (event.data === YT.PlayerState.PLAYING) {
-            playerState.loadingTrack = false;
-            playerState.isPlaying = true;
-            updatePlayIcon();
-            startProgressTimer();
-        } else if (event.data === YT.PlayerState.PAUSED) {
-            if (playerState.loadingTrack) return;
-            playerState.isPlaying = false;
-            updatePlayIcon();
-            stopProgressTimer();
-        } else if (event.data === YT.PlayerState.ENDED) {
-            if (playerState.loadingTrack) return;
-            playNextWithQueue(); // Use queue-aware next
-        }
-    };
-
     // Event listeners
     if (queueToggleBtn) {
         queueToggleBtn.addEventListener('click', toggleQueue);
@@ -1206,6 +1628,12 @@
 
     if (queueClearBtn) {
         queueClearBtn.addEventListener('click', clearQueue);
+    }
+
+    if (queueCloseBtn) {
+        queueCloseBtn.addEventListener('click', function() {
+            if (queuePanel) queuePanel.classList.remove('visible');
+        });
     }
 
     if (repeatBtn) {
