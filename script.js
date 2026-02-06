@@ -1345,10 +1345,15 @@
         musicPlayerEl.classList.add('visible');
 
         if (playerState.ytReady && playerState.ytPlayer) {
+            playerState.loadingTrack = true;
+            clearTimeout(playerState.loadingTimeout);
+            playerState.loadingTimeout = setTimeout(function() { playerState.loadingTrack = false; }, 5000);
+            playerState.ytPlayer.unMute();
+            playerState.ytPlayer.setVolume(100);
             playerState.ytPlayer.loadVideoById(current.videoId);
             playerState.isPlaying = true;
-            iconPlay.style.display = 'none';
-            iconPause.style.display = 'inline';
+            updatePlayIcon();
+            startProgressTimer();
         }
 
         renderQueue();
@@ -1378,10 +1383,15 @@
         musicPlayerEl.classList.add('visible');
 
         if (playerState.ytReady && playerState.ytPlayer) {
+            playerState.loadingTrack = true;
+            clearTimeout(playerState.loadingTimeout);
+            playerState.loadingTimeout = setTimeout(function() { playerState.loadingTrack = false; }, 5000);
+            playerState.ytPlayer.unMute();
+            playerState.ytPlayer.setVolume(100);
             playerState.ytPlayer.loadVideoById(current.videoId);
             playerState.isPlaying = true;
-            iconPlay.style.display = 'none';
-            iconPause.style.display = 'inline';
+            updatePlayIcon();
+            startProgressTimer();
         }
 
         renderQueue();
