@@ -17,113 +17,7 @@
     }
 
     // ============================================
-    // Birthday Canvas Confetti System
-    // ============================================
-    class BirthdayConfetti {
-        constructor(canvas) {
-            this.canvas = canvas;
-            this.ctx = canvas.getContext('2d');
-            this.particles = [];
-            this.running = false;
-            this.resize();
-            window.addEventListener('resize', () => this.resize());
-        }
-
-        resize() {
-            this.canvas.width = window.innerWidth;
-            this.canvas.height = window.innerHeight;
-        }
-
-        createParticle() {
-            const colors = [
-                '#ffd700', '#ffb347', '#ff6b6b', '#ffffff',
-                '#ffc0cb', '#87ceeb', '#dda0dd', '#f0e68c'
-            ];
-            return {
-                x: Math.random() * this.canvas.width,
-                y: -20,
-                size: Math.random() * 6 + 2,
-                color: colors[Math.floor(Math.random() * colors.length)],
-                speedY: Math.random() * 2 + 1,
-                speedX: (Math.random() - 0.5) * 2,
-                rotation: Math.random() * 360,
-                rotationSpeed: (Math.random() - 0.5) * 8,
-                opacity: 1,
-                shape: Math.random() > 0.5 ? 'circle' : 'rect'
-            };
-        }
-
-        start() {
-            this.running = true;
-            // Initial burst
-            for (let i = 0; i < 80; i++) {
-                const p = this.createParticle();
-                p.y = Math.random() * this.canvas.height;
-                this.particles.push(p);
-            }
-            this.animate();
-        }
-
-        stop() {
-            this.running = false;
-        }
-
-        animate() {
-            if (!this.running) return;
-
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-            // Add new particles
-            if (this.particles.length < 120 && Math.random() > 0.7) {
-                this.particles.push(this.createParticle());
-            }
-
-            for (let i = this.particles.length - 1; i >= 0; i--) {
-                const p = this.particles[i];
-
-                p.y += p.speedY;
-                p.x += p.speedX;
-                p.rotation += p.rotationSpeed;
-                p.speedX += (Math.random() - 0.5) * 0.1;
-
-                // Gentle gravity
-                p.speedY += 0.02;
-
-                // Fade out near bottom
-                if (p.y > this.canvas.height * 0.8) {
-                    p.opacity -= 0.02;
-                }
-
-                // Remove dead particles
-                if (p.y > this.canvas.height || p.opacity <= 0) {
-                    this.particles.splice(i, 1);
-                    continue;
-                }
-
-                this.ctx.save();
-                this.ctx.globalAlpha = p.opacity;
-                this.ctx.translate(p.x, p.y);
-                this.ctx.rotate((p.rotation * Math.PI) / 180);
-
-                if (p.shape === 'circle') {
-                    this.ctx.beginPath();
-                    this.ctx.arc(0, 0, p.size, 0, Math.PI * 2);
-                    this.ctx.fillStyle = p.color;
-                    this.ctx.fill();
-                } else {
-                    this.ctx.fillStyle = p.color;
-                    this.ctx.fillRect(-p.size, -p.size / 2, p.size * 2, p.size);
-                }
-
-                this.ctx.restore();
-            }
-
-            requestAnimationFrame(() => this.animate());
-        }
-    }
-
-    // ============================================
-    // Birthday Audio — Web Audio API Melodies
+    // Birthday Audio — Web Audio API
     // ============================================
     let audioCtx = null;
 
@@ -136,8 +30,8 @@
     }
 
     function playNote(ctx, freq, startTime, duration, volume, type) {
-        var osc = ctx.createOscillator();
-        var gain = ctx.createGain();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
         osc.type = type || 'sine';
         osc.frequency.value = freq;
         gain.gain.setValueAtTime(0, startTime);
@@ -149,73 +43,36 @@
         osc.stop(startTime + duration);
     }
 
-    // Magical chime — plays when overlay opens
     function playOpenChime() {
         try {
-            var ctx = getAudioContext();
-            var t = ctx.currentTime;
-            // Ascending sparkle chime (C5 E5 G5 C6)
+            const ctx = getAudioContext();
+            const t = ctx.currentTime;
             playNote(ctx, 523.25, t, 0.5, 0.1, 'sine');
             playNote(ctx, 659.25, t + 0.12, 0.5, 0.1, 'sine');
             playNote(ctx, 783.99, t + 0.24, 0.5, 0.1, 'sine');
             playNote(ctx, 1046.5, t + 0.36, 0.8, 0.12, 'sine');
-            // Soft shimmer pad
             playNote(ctx, 523.25, t + 0.1, 1.2, 0.04, 'triangle');
             playNote(ctx, 659.25, t + 0.1, 1.2, 0.04, 'triangle');
             playNote(ctx, 783.99, t + 0.1, 1.2, 0.04, 'triangle');
         } catch (e) {}
     }
 
-    // Candle blow-out sound — a soft "whoosh"
-    function playBlowSound() {
-        try {
-            var ctx = getAudioContext();
-            var t = ctx.currentTime;
-            // White noise burst for whoosh
-            var bufferSize = ctx.sampleRate * 0.2;
-            var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            var data = buffer.getChannelData(0);
-            for (var i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 3);
-            }
-            var source = ctx.createBufferSource();
-            source.buffer = buffer;
-            var gain = ctx.createGain();
-            gain.gain.setValueAtTime(0.08, t);
-            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
-            var filter = ctx.createBiquadFilter();
-            filter.type = 'bandpass';
-            filter.frequency.value = 1200;
-            filter.Q.value = 0.5;
-            source.connect(filter);
-            filter.connect(gain);
-            gain.connect(ctx.destination);
-            source.start(t);
-            // Tiny chime after whoosh
-            playNote(ctx, 880 + Math.random() * 400, t + 0.05, 0.3, 0.06, 'sine');
-        } catch (e) {}
-    }
-
-    // Happy Birthday melody snippet — plays on celebration
     function playCelebrationMelody() {
         try {
-            var ctx = getAudioContext();
-            var t = ctx.currentTime;
-            // "Happy Birthday to you" melody (first line)
-            var melody = [
+            const ctx = getAudioContext();
+            const t = ctx.currentTime;
+            const melody = [
                 [261.63, 0.25], [261.63, 0.25], [293.66, 0.5], [261.63, 0.5],
                 [349.23, 0.5], [329.63, 1.0],
                 [261.63, 0.25], [261.63, 0.25], [293.66, 0.5], [261.63, 0.5],
                 [392.00, 0.5], [349.23, 1.0]
             ];
-            var offset = 0;
+            let offset = 0;
             melody.forEach(function(note) {
                 playNote(ctx, note[0], t + offset, note[1] * 0.9, 0.1, 'sine');
-                // Harmony
                 playNote(ctx, note[0] * 1.5, t + offset, note[1] * 0.9, 0.03, 'triangle');
                 offset += note[1] * 0.45;
             });
-            // Sustained chord at end
             playNote(ctx, 261.63, t + offset, 2, 0.06, 'triangle');
             playNote(ctx, 329.63, t + offset, 2, 0.06, 'triangle');
             playNote(ctx, 392.00, t + offset, 2, 0.06, 'triangle');
@@ -223,7 +80,703 @@
     }
 
     // ============================================
-    // Birthday Celebration — Interactive Candles
+    // Birthday Space Game — "Cosmic Birthday Rescue"
+    // ============================================
+    class SpaceBirthdayGame {
+        constructor(canvas) {
+            this.canvas = canvas;
+            this.ctx = canvas.getContext('2d');
+            this.w = 0;
+            this.h = 0;
+
+            this.state = 'IDLE';
+            this.frame = 0;
+            this.sf = 0;
+            this.running = false;
+            this.shakeFrames = 0;
+
+            this.ship = { x: 0, y: 0, trail: [] };
+            this.bgStars = [];
+            this.items = [];
+            this.particles = [];
+
+            this.score = 0;
+            this.maxScore = 25;
+            this.lives = 3;
+            this.spawnTimer = 0;
+
+            this.beamY = 0;
+            this.motherX = 0;
+            this.motherHit = false;
+
+            this.inputX = 0;
+            this.onVictory = null;
+
+            this._resize = this._resize.bind(this);
+            this._onMouse = this._onMouse.bind(this);
+            this._onTouch = this._onTouch.bind(this);
+            this._onTouchStart = this._onTouchStart.bind(this);
+        }
+
+        _resize() {
+            const dpr = window.devicePixelRatio || 1;
+            this.w = window.innerWidth;
+            this.h = window.innerHeight;
+            this.canvas.width = this.w * dpr;
+            this.canvas.height = this.h * dpr;
+            this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        _onMouse(e) { this.inputX = e.clientX; }
+        _onTouch(e) { e.preventDefault(); this.inputX = e.touches[0].clientX; }
+        _onTouchStart(e) { this.inputX = e.touches[0].clientX; }
+
+        start() {
+            if (this.running) this.stop();
+
+            this._resize();
+            window.addEventListener('resize', this._resize);
+            window.addEventListener('mousemove', this._onMouse);
+            window.addEventListener('touchmove', this._onTouch, { passive: false });
+            window.addEventListener('touchstart', this._onTouchStart);
+
+            this.state = 'INTRO';
+            this.frame = 0;
+            this.sf = 0;
+            this.score = 0;
+            this.lives = 3;
+            this.items = [];
+            this.particles = [];
+            this.ship.trail = [];
+            this.spawnTimer = 0;
+            this.beamY = 0;
+            this.motherHit = false;
+            this.shakeFrames = 0;
+
+            this.bgStars = [];
+            for (let i = 0; i < 150; i++) {
+                this.bgStars.push({
+                    x: Math.random() * this.w,
+                    y: Math.random() * this.h,
+                    s: Math.random() * 1.8 + 0.4,
+                    sp: Math.random() * 0.3 + 0.1,
+                    tw: Math.random() * 6.28
+                });
+            }
+
+            this.ship.x = this.w / 2;
+            this.ship.y = this.h * 0.82;
+            this.inputX = this.w / 2;
+            this.motherX = this.w / 2;
+
+            this.running = true;
+            this._loop();
+        }
+
+        stop() {
+            this.running = false;
+            window.removeEventListener('resize', this._resize);
+            window.removeEventListener('mousemove', this._onMouse);
+            window.removeEventListener('touchmove', this._onTouch);
+            window.removeEventListener('touchstart', this._onTouchStart);
+        }
+
+        _loop() {
+            if (!this.running) return;
+            this.frame++;
+            this.sf++;
+            this._update();
+            this._render();
+            requestAnimationFrame(() => this._loop());
+        }
+
+        // ============ UPDATE ============
+
+        _update() {
+            for (let i = 0; i < this.bgStars.length; i++) {
+                const s = this.bgStars[i];
+                s.y += s.sp;
+                if (s.y > this.h) { s.y = -2; s.x = Math.random() * this.w; }
+            }
+
+            for (let i = this.particles.length - 1; i >= 0; i--) {
+                const p = this.particles[i];
+                p.x += p.vx; p.y += p.vy;
+                p.vy += p.g || 0;
+                p.life -= p.d;
+                if (p.rot !== undefined) p.rot += p.rs || 0;
+                if (p.life <= 0) this.particles.splice(i, 1);
+            }
+
+            if (this.shakeFrames > 0) this.shakeFrames--;
+
+            if (this.state === 'INTRO') this._uIntro();
+            else if (this.state === 'PLAYING') this._uPlaying();
+            else if (this.state === 'BEAM') this._uBeam();
+            else if (this.state === 'VICTORY') this._uVictory();
+        }
+
+        _uIntro() {
+            if (this.sf >= 300) { this.state = 'PLAYING'; this.sf = 0; }
+        }
+
+        _uPlaying() {
+            this.ship.x += (this.inputX - this.ship.x) * 0.12;
+            this.ship.x = Math.max(24, Math.min(this.w - 24, this.ship.x));
+
+            if (this.frame % 2 === 0) {
+                this.ship.trail.push({ x: this.ship.x, y: this.ship.y + 20, l: 1 });
+                if (this.ship.trail.length > 10) this.ship.trail.shift();
+            }
+            for (let i = 0; i < this.ship.trail.length; i++) this.ship.trail[i].l -= 0.1;
+
+            this.spawnTimer++;
+            const rate = Math.max(18, 38 - this.sf / 45);
+            if (this.spawnTimer >= rate) {
+                this.spawnTimer = 0;
+                this._spawn();
+            }
+
+            for (let i = this.items.length - 1; i >= 0; i--) {
+                const it = this.items[i];
+                it.y += it.sp;
+                it.x += it.dr;
+                it.rot += it.rs;
+
+                if (it.y > this.h + 40) { this.items.splice(i, 1); continue; }
+
+                const dx = it.x - this.ship.x, dy = it.y - this.ship.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (it.type === 'a') {
+                    if (dist < 28) {
+                        this.lives--;
+                        this.items.splice(i, 1);
+                        this._burst(it.x, it.y, '#ff4444', 10);
+                        this._burst(this.ship.x, this.ship.y, '#ffffff', 5);
+                        this.shakeFrames = 10;
+                        this._sndHit();
+                        if (this.lives <= 0) { this.lives = 3; this.score = Math.max(0, this.score - 5); }
+                    }
+                } else if (dist < 42) {
+                    this.score = Math.min(this.maxScore, this.score + it.pts);
+                    this.items.splice(i, 1);
+                    this._burst(it.x, it.y, it.col, 8);
+                    this._sndCollect();
+                    if (this.score >= this.maxScore) {
+                        this.state = 'BEAM';
+                        this.sf = 0;
+                        this.items = [];
+                        this.beamY = this.ship.y;
+                    }
+                }
+            }
+        }
+
+        _spawn() {
+            const r = Math.random();
+            let t, sp, sz, col, pts;
+            if (r < 0.28) { t = 'a'; sp = 1.5 + Math.random() * 1.5; sz = 14 + Math.random() * 10; col = '#8b7d7b'; pts = 0; }
+            else if (r < 0.65) { t = 's'; sp = 1 + Math.random(); sz = 10 + Math.random() * 4; col = '#ffd700'; pts = 1; }
+            else if (r < 0.88) { t = 'g'; sp = 0.8 + Math.random() * 0.8; sz = 16 + Math.random() * 4; col = '#ff69b4'; pts = 3; }
+            else { t = 'u'; sp = 1.5 + Math.random() * 1.5; sz = 14; col = '#39ff14'; pts = 5; }
+
+            this.items.push({
+                type: t, sp, sz, col, pts,
+                x: 30 + Math.random() * (this.w - 60), y: -30,
+                dr: (Math.random() - 0.5) * 0.5, rot: 0,
+                rs: (Math.random() - 0.5) * 0.03
+            });
+        }
+
+        _uBeam() {
+            this.beamY -= 12;
+            for (let i = 0; i < 3; i++) {
+                this.particles.push({
+                    x: this.ship.x + (Math.random() - 0.5) * 20,
+                    y: this.beamY + Math.random() * 40,
+                    vx: (Math.random() - 0.5) * 2, vy: -Math.random() * 2,
+                    g: 0, life: 1, d: 0.03,
+                    sz: 2 + Math.random() * 3,
+                    col: Math.random() > 0.5 ? '#ffd700' : '#ff69b4'
+                });
+            }
+            if (this.beamY <= 120 && !this.motherHit) {
+                this.motherHit = true;
+                this._burst(this.motherX, 80, '#39ff14', 30);
+                this._burst(this.motherX, 80, '#ffd700', 20);
+                this._burst(this.motherX, 80, '#ff69b4', 15);
+                this._sndExplosion();
+            }
+            if (this.sf >= 120) {
+                this.state = 'VICTORY';
+                this.sf = 0;
+                if (this.onVictory) this.onVictory();
+            }
+        }
+
+        _uVictory() {
+            if (this.sf % 3 === 0 && this.sf < 180) {
+                const cols = ['#ffd700', '#ff69b4', '#87ceeb', '#ff4444', '#39ff14', '#dda0dd', '#ffa500', '#fff'];
+                for (let i = 0; i < 4; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.w, y: -10,
+                        vx: (Math.random() - 0.5) * 3, vy: Math.random() * 2 + 1,
+                        g: 0.02, life: 1, d: 0.007,
+                        sz: 3 + Math.random() * 5,
+                        col: cols[Math.floor(Math.random() * cols.length)],
+                        shape: Math.random() > 0.5 ? 'r' : 'c',
+                        rot: 0, rs: (Math.random() - 0.5) * 0.1
+                    });
+                }
+            }
+        }
+
+        _burst(x, y, col, n) {
+            for (let i = 0; i < n; i++) {
+                const a = (6.28 / n) * i + Math.random() * 0.5;
+                const v = 1 + Math.random() * 3;
+                this.particles.push({
+                    x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v,
+                    g: 0.04, life: 1, d: 0.02 + Math.random() * 0.02,
+                    sz: 2 + Math.random() * 3, col
+                });
+            }
+        }
+
+        // ============ RENDER ============
+
+        _render() {
+            const c = this.ctx, w = this.w, h = this.h;
+            c.clearRect(0, 0, w, h);
+            c.save();
+
+            if (this.shakeFrames > 0) {
+                c.translate((Math.random() - 0.5) * 8, (Math.random() - 0.5) * 8);
+            }
+
+            // Background stars
+            for (let i = 0; i < this.bgStars.length; i++) {
+                const s = this.bgStars[i];
+                c.globalAlpha = 0.3 + 0.7 * Math.abs(Math.sin(this.frame * 0.01 + s.tw));
+                c.fillStyle = '#fff';
+                c.beginPath();
+                c.arc(s.x, s.y, s.s, 0, 6.28);
+                c.fill();
+            }
+            c.globalAlpha = 1;
+
+            if (this.state === 'INTRO') this._rIntro(c, w, h);
+            else if (this.state === 'PLAYING') this._rPlaying(c, w, h);
+            else if (this.state === 'BEAM') this._rBeam(c, w, h);
+
+            // Particles
+            for (let i = 0; i < this.particles.length; i++) {
+                const p = this.particles[i];
+                c.globalAlpha = Math.max(0, p.life);
+                c.fillStyle = p.col;
+                if (p.shape === 'r') {
+                    c.save(); c.translate(p.x, p.y); c.rotate(p.rot || 0);
+                    c.fillRect(-p.sz, -p.sz / 2, p.sz * 2, p.sz);
+                    c.restore();
+                } else {
+                    c.beginPath(); c.arc(p.x, p.y, p.sz, 0, 6.28); c.fill();
+                }
+            }
+            c.globalAlpha = 1;
+            c.restore();
+        }
+
+        _rIntro(c, w, h) {
+            const lines = [
+                { t: 'INCOMING TRANSMISSION', s: 30, col: '#ff4444', f: 'bold 18px "Space Grotesk",monospace' },
+                { t: 'Aliens stole your birthday surprise!', s: 80, col: '#fff', f: '20px "Plus Jakarta Sans",sans-serif' },
+                { t: 'Collect stars to charge the rescue beam', s: 140, col: '#ffd700', f: '18px "Plus Jakarta Sans",sans-serif' },
+                { t: 'move to navigate', s: 210, col: 'rgba(255,255,255,0.5)', f: '14px "Space Grotesk",sans-serif' }
+            ];
+            const cy = h * 0.38;
+            for (let i = 0; i < lines.length; i++) {
+                const ln = lines[i];
+                if (this.sf < ln.s) continue;
+                const prog = Math.min(1, (this.sf - ln.s) / 20);
+                const fade = this.sf > 260 ? Math.max(0, 1 - (this.sf - 260) / 30) : 1;
+                c.globalAlpha = prog * fade;
+                c.fillStyle = ln.col;
+                c.font = ln.f;
+                c.textAlign = 'center';
+                c.fillText(ln.t, w / 2, cy + i * 42);
+            }
+            c.globalAlpha = 1;
+            c.textAlign = 'left';
+
+            if (this.sf > 230) {
+                c.globalAlpha = Math.min(1, (this.sf - 230) / 40);
+                this._dShip(c, this.ship.x, this.ship.y);
+                c.globalAlpha = 1;
+            }
+        }
+
+        _rPlaying(c, w, h) {
+            // Engine trail
+            for (let i = 0; i < this.ship.trail.length; i++) {
+                const t = this.ship.trail[i];
+                if (t.l <= 0) continue;
+                c.globalAlpha = t.l * 0.3;
+                c.fillStyle = '#ffa500';
+                c.beginPath();
+                c.arc(t.x, t.y, 3 * t.l, 0, 6.28);
+                c.fill();
+            }
+            c.globalAlpha = 1;
+
+            this._dShip(c, this.ship.x, this.ship.y);
+
+            // Items
+            for (let i = 0; i < this.items.length; i++) {
+                const it = this.items[i];
+                c.save(); c.translate(it.x, it.y); c.rotate(it.rot);
+                if (it.type === 's') this._dStar(c, 0, 0, it.sz, it.col);
+                else if (it.type === 'g') this._dGift(c, 0, 0, it.sz);
+                else if (it.type === 'a') this._dRock(c, 0, 0, it.sz);
+                else if (it.type === 'u') this._dUFO(c, 0, 0, it.sz);
+                c.restore();
+            }
+
+            this._rHUD(c, w);
+        }
+
+        _rBeam(c, w, h) {
+            this._dShip(c, this.ship.x, this.ship.y);
+
+            // Beam
+            const g = c.createLinearGradient(this.ship.x, this.ship.y, this.ship.x, this.beamY);
+            g.addColorStop(0, 'rgba(255,215,0,0.8)');
+            g.addColorStop(0.5, 'rgba(255,105,180,0.6)');
+            g.addColorStop(1, 'rgba(255,255,255,0.9)');
+            c.strokeStyle = g;
+            c.lineWidth = 6;
+            c.shadowColor = '#ffd700';
+            c.shadowBlur = 20;
+            c.beginPath();
+            c.moveTo(this.ship.x, this.ship.y - 24);
+            c.lineTo(this.ship.x, Math.max(0, this.beamY));
+            c.stroke();
+            c.globalAlpha = 0.3;
+            c.lineWidth = 20;
+            c.stroke();
+            c.globalAlpha = 1;
+            c.lineWidth = 1;
+            c.shadowBlur = 0;
+
+            if (!this.motherHit) {
+                this._dMother(c, this.motherX, 80);
+            }
+
+            if (this.sf < 60) {
+                c.globalAlpha = Math.min(1, this.sf / 15);
+                c.fillStyle = '#ffd700';
+                c.font = 'bold 22px "Space Grotesk",monospace';
+                c.textAlign = 'center';
+                c.shadowColor = '#ffd700';
+                c.shadowBlur = 15;
+                c.fillText('BIRTHDAY BEAM CHARGED', w / 2, h * 0.45);
+                c.shadowBlur = 0;
+                c.globalAlpha = 1;
+                c.textAlign = 'left';
+            }
+        }
+
+        _rHUD(c, w) {
+            for (let i = 0; i < 3; i++) {
+                c.fillStyle = i < this.lives ? '#ff4444' : 'rgba(255,255,255,0.2)';
+                c.font = '20px sans-serif';
+                c.fillText('\u2665', 20 + i * 28, 30);
+            }
+
+            const bw = Math.min(200, w * 0.4), bx = (w - bw) / 2, by = 18, bh = 8;
+            const prog = this.score / this.maxScore;
+
+            c.fillStyle = 'rgba(255,255,255,0.15)';
+            this._rr(c, bx, by, bw, bh, 4);
+            c.fill();
+
+            if (prog > 0) {
+                const fg = c.createLinearGradient(bx, 0, bx + bw * prog, 0);
+                fg.addColorStop(0, '#ffd700');
+                fg.addColorStop(1, '#ff69b4');
+                c.fillStyle = fg;
+                this._rr(c, bx, by, bw * prog, bh, 4);
+                c.fill();
+                c.shadowColor = '#ffd700';
+                c.shadowBlur = 8;
+                c.fill();
+                c.shadowBlur = 0;
+            }
+
+            c.fillStyle = 'rgba(255,255,255,0.4)';
+            c.font = '11px "Space Grotesk",sans-serif';
+            c.textAlign = 'center';
+            c.fillText('RESCUE BEAM', w / 2, by + bh + 16);
+            c.textAlign = 'left';
+        }
+
+        _rr(c, x, y, w, h, r) {
+            c.beginPath();
+            if (c.roundRect) { c.roundRect(x, y, Math.max(0, w), h, r); }
+            else {
+                const rr = Math.min(r, w / 2, h / 2);
+                c.moveTo(x + rr, y);
+                c.arcTo(x + w, y, x + w, y + h, rr);
+                c.arcTo(x + w, y + h, x, y + h, rr);
+                c.arcTo(x, y + h, x, y, rr);
+                c.arcTo(x, y, x + w, y, rr);
+                c.closePath();
+            }
+        }
+
+        // ============ ENTITIES ============
+
+        _dShip(c, x, y) {
+            c.save();
+            c.translate(x, y);
+
+            // Engine glow
+            const eg = c.createRadialGradient(0, 20, 0, 0, 20, 15);
+            eg.addColorStop(0, 'rgba(255,150,50,0.6)');
+            eg.addColorStop(0.5, 'rgba(255,100,50,0.2)');
+            eg.addColorStop(1, 'transparent');
+            c.fillStyle = eg;
+            c.fillRect(-15, 12, 30, 30);
+
+            // Engine flame flicker
+            const flameH = 8 + Math.sin(this.frame * 0.3) * 4;
+            const fg = c.createLinearGradient(0, 14, 0, 14 + flameH);
+            fg.addColorStop(0, 'rgba(255,200,50,0.8)');
+            fg.addColorStop(0.5, 'rgba(255,100,20,0.5)');
+            fg.addColorStop(1, 'transparent');
+            c.fillStyle = fg;
+            c.beginPath();
+            c.moveTo(-5, 14);
+            c.lineTo(5, 14);
+            c.lineTo(1, 14 + flameH);
+            c.lineTo(-1, 14 + flameH);
+            c.closePath();
+            c.fill();
+
+            // Body
+            c.beginPath();
+            c.moveTo(0, -22);
+            c.lineTo(-16, 18);
+            c.lineTo(-6, 12);
+            c.lineTo(6, 12);
+            c.lineTo(16, 18);
+            c.closePath();
+            const bg = c.createLinearGradient(0, -22, 0, 18);
+            bg.addColorStop(0, '#e0e0ff');
+            bg.addColorStop(0.5, '#8888cc');
+            bg.addColorStop(1, '#5555aa');
+            c.fillStyle = bg;
+            c.fill();
+            c.strokeStyle = 'rgba(255,255,255,0.3)';
+            c.lineWidth = 0.5;
+            c.stroke();
+
+            // Cockpit
+            c.beginPath();
+            c.ellipse(0, -4, 5, 8, 0, 0, 6.28);
+            const cg = c.createRadialGradient(0, -6, 0, 0, -4, 6);
+            cg.addColorStop(0, '#aaddff');
+            cg.addColorStop(1, '#4488cc');
+            c.fillStyle = cg;
+            c.fill();
+
+            // Birthday hat
+            c.beginPath();
+            c.moveTo(0, -34);
+            c.lineTo(-6, -22);
+            c.lineTo(6, -22);
+            c.closePath();
+            const hg = c.createLinearGradient(0, -34, 0, -22);
+            hg.addColorStop(0, '#ff3399');
+            hg.addColorStop(1, '#ff69b4');
+            c.fillStyle = hg;
+            c.fill();
+
+            // Pom-pom
+            c.beginPath();
+            c.arc(0, -35, 3, 0, 6.28);
+            c.fillStyle = '#ffd700';
+            c.fill();
+            c.shadowColor = '#ffd700';
+            c.shadowBlur = 6;
+            c.fill();
+            c.shadowBlur = 0;
+
+            c.restore();
+        }
+
+        _dStar(c, x, y, sz, col) {
+            c.save();
+            c.shadowColor = col;
+            c.shadowBlur = 10;
+            c.fillStyle = col;
+            c.beginPath();
+            for (let i = 0; i < 5; i++) {
+                const a = (i * 4 * Math.PI / 5) - Math.PI / 2;
+                const px = x + Math.cos(a) * sz;
+                const py = y + Math.sin(a) * sz;
+                if (i === 0) c.moveTo(px, py); else c.lineTo(px, py);
+            }
+            c.closePath();
+            c.fill();
+            c.shadowBlur = 0;
+            c.restore();
+        }
+
+        _dGift(c, x, y, sz) {
+            c.save();
+            c.shadowColor = '#ff69b4';
+            c.shadowBlur = 8;
+            c.fillStyle = '#ff69b4';
+            c.fillRect(x - sz / 2, y - sz / 2, sz, sz);
+            c.shadowBlur = 0;
+            c.fillStyle = '#ffd700';
+            c.fillRect(x - sz / 2, y - 2, sz, 4);
+            c.fillRect(x - 2, y - sz / 2, 4, sz);
+            c.beginPath();
+            c.arc(x - 4, y - sz / 2 - 3, 4, 0, 6.28);
+            c.arc(x + 4, y - sz / 2 - 3, 4, 0, 6.28);
+            c.fill();
+            c.restore();
+        }
+
+        _dRock(c, x, y, sz) {
+            c.fillStyle = '#7a6b6b';
+            c.beginPath();
+            for (let i = 0; i < 8; i++) {
+                const a = (6.28 / 8) * i;
+                const r = sz * (0.7 + 0.3 * Math.sin(i * 2.7));
+                const px = x + Math.cos(a) * r, py = y + Math.sin(a) * r;
+                if (i === 0) c.moveTo(px, py); else c.lineTo(px, py);
+            }
+            c.closePath();
+            c.fill();
+            c.fillStyle = 'rgba(0,0,0,0.2)';
+            c.beginPath();
+            c.arc(x + sz * 0.2, y - sz * 0.1, sz * 0.25, 0, 6.28);
+            c.fill();
+        }
+
+        _dUFO(c, x, y, sz) {
+            c.save();
+            c.shadowColor = '#39ff14';
+            c.shadowBlur = 12;
+            c.fillStyle = '#39ff14';
+            c.beginPath();
+            c.ellipse(x, y, sz, sz * 0.4, 0, 0, 6.28);
+            c.fill();
+            c.shadowBlur = 0;
+            c.fillStyle = 'rgba(200,255,200,0.5)';
+            c.beginPath();
+            c.ellipse(x, y - sz * 0.3, sz * 0.5, sz * 0.4, 0, 0, 6.28);
+            c.fill();
+            for (let i = 0; i < 3; i++) {
+                c.fillStyle = i % 2 === 0 ? '#ff0' : '#f44';
+                c.beginPath();
+                c.arc(x - sz * 0.5 + i * sz * 0.5, y + sz * 0.15, 2, 0, 6.28);
+                c.fill();
+            }
+            c.restore();
+        }
+
+        _dMother(c, x, y) {
+            c.save();
+            c.translate(x, y);
+
+            c.fillStyle = '#2a5a2a';
+            c.shadowColor = '#39ff14';
+            c.shadowBlur = 20;
+            c.beginPath();
+            c.ellipse(0, 0, 60, 18, 0, 0, 6.28);
+            c.fill();
+            c.shadowBlur = 0;
+
+            c.fillStyle = '#1a3a1a';
+            c.beginPath();
+            c.ellipse(0, -14, 30, 20, 0, 0, 6.28);
+            c.fill();
+
+            c.fillStyle = 'rgba(57,255,20,0.4)';
+            c.beginPath();
+            c.ellipse(0, -18, 12, 8, 0, 0, 6.28);
+            c.fill();
+
+            for (let i = 0; i < 8; i++) {
+                const a = (6.28 / 8) * i + this.frame * 0.05;
+                c.fillStyle = 'hsl(' + ((i * 45 + this.frame * 2) % 360) + ',100%,60%)';
+                c.beginPath();
+                c.arc(Math.cos(a) * 55, Math.sin(a) * 15, 3, 0, 6.28);
+                c.fill();
+            }
+
+            // Tractor beam holding the gift
+            c.globalAlpha = 0.12 + 0.05 * Math.sin(this.frame * 0.03);
+            c.fillStyle = '#39ff14';
+            c.beginPath();
+            c.moveTo(-15, 18); c.lineTo(15, 18);
+            c.lineTo(25, 60); c.lineTo(-25, 60);
+            c.closePath();
+            c.fill();
+            c.globalAlpha = 1;
+
+            this._dGift(c, 0, 50, 20);
+
+            c.restore();
+        }
+
+        // ============ SOUNDS ============
+
+        _sndCollect() {
+            try {
+                const ctx = getAudioContext(), t = ctx.currentTime;
+                const pitch = 500 + (this.score / this.maxScore) * 500;
+                playNote(ctx, pitch, t, 0.12, 0.06, 'sine');
+                playNote(ctx, pitch * 1.5, t + 0.04, 0.1, 0.03, 'triangle');
+            } catch (e) {}
+        }
+
+        _sndHit() {
+            try {
+                const ctx = getAudioContext(), t = ctx.currentTime;
+                playNote(ctx, 80, t, 0.3, 0.1, 'sine');
+                playNote(ctx, 120, t, 0.15, 0.06, 'square');
+            } catch (e) {}
+        }
+
+        _sndExplosion() {
+            try {
+                const ctx = getAudioContext(), t = ctx.currentTime;
+                const bufSz = ctx.sampleRate * 0.5;
+                const buf = ctx.createBuffer(1, bufSz, ctx.sampleRate);
+                const data = buf.getChannelData(0);
+                for (let i = 0; i < bufSz; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufSz, 2);
+                const src = ctx.createBufferSource();
+                src.buffer = buf;
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.15, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+                src.connect(gain);
+                gain.connect(ctx.destination);
+                src.start(t);
+                playNote(ctx, 523.25, t + 0.2, 1, 0.08, 'sine');
+                playNote(ctx, 659.25, t + 0.2, 1, 0.06, 'triangle');
+                playNote(ctx, 783.99, t + 0.2, 1, 0.06, 'triangle');
+            } catch (e) {}
+        }
+    }
+
+    // ============================================
+    // Birthday Celebration — Space Game Init
     // ============================================
     function initBirthday() {
         if (!isBirthdayPeriod()) return;
@@ -231,100 +784,51 @@
         const overlay = document.getElementById('birthdayOverlay');
         const banner = document.getElementById('birthdayBanner');
         const canvas = document.getElementById('birthdayCanvas');
-        const hint = document.getElementById('birthdayHint');
         const title = document.getElementById('birthdayTitle');
         const subtitle = document.getElementById('birthdaySubtitle');
-        const candles = document.querySelectorAll('.candle');
 
         if (!overlay || !banner || !canvas) return;
 
-        // Show banner immediately — non-intrusive
         banner.style.display = 'flex';
         document.body.classList.add('birthday-active');
-
-        // Clicking the banner opens the candle experience
         banner.style.cursor = 'pointer';
-        banner.addEventListener('click', openCelebration);
 
-        let confetti = null;
-        let candlesBlown = 0;
-        const totalCandles = candles.length;
+        let game = null;
 
-        function openCelebration() {
-            // Reset candles if reopened
-            candlesBlown = 0;
-            candles.forEach(c => c.classList.remove('blown'));
-            title.classList.remove('visible');
-            subtitle.classList.remove('visible');
-            hint.classList.remove('hidden');
-            hint.textContent = 'Tap the candles to make a wish';
-
+        banner.addEventListener('click', function() {
             overlay.style.display = 'flex';
             overlay.classList.remove('hiding');
             document.body.style.overflow = 'hidden';
+            title.classList.remove('visible');
+            subtitle.classList.remove('visible');
 
-            if (!confetti) {
-                confetti = new BirthdayConfetti(canvas);
+            if (!game) {
+                game = new SpaceBirthdayGame(canvas);
             }
 
-            // Play magical open chime
+            game.onVictory = function() {
+                setTimeout(function() {
+                    title.classList.add('visible');
+                    subtitle.classList.add('visible');
+                }, 400);
+                setTimeout(function() { playCelebrationMelody(); }, 300);
+                setTimeout(function() { dismissOverlay(); }, 6000);
+            };
+
             playOpenChime();
-        }
-
-        // Click a candle to blow it out
-        candles.forEach(candle => {
-            candle.addEventListener('click', () => {
-                if (candle.classList.contains('blown')) return;
-
-                candle.classList.add('blown');
-                candlesBlown++;
-
-                // Play blow-out sound
-                playBlowSound();
-
-                // Update hint with remaining count
-                const remaining = totalCandles - candlesBlown;
-                if (remaining > 0) {
-                    hint.textContent = remaining + ' candle' + (remaining > 1 ? 's' : '') + ' left...';
-                }
-
-                // All candles blown — celebrate!
-                if (candlesBlown === totalCandles) {
-                    hint.classList.add('hidden');
-
-                    // Start confetti burst
-                    confetti.start();
-
-                    // Play celebration melody
-                    setTimeout(() => playCelebrationMelody(), 200);
-
-                    // Show title and subtitle
-                    setTimeout(() => {
-                        title.classList.add('visible');
-                        subtitle.classList.add('visible');
-                    }, 400);
-
-                    // Auto-dismiss after celebration
-                    setTimeout(() => {
-                        dismissOverlay();
-                    }, 5000);
-                }
-            });
+            game.start();
         });
 
-        // Dismiss overlay
         function dismissOverlay() {
             overlay.classList.add('hiding');
             document.body.style.overflow = '';
-
-            setTimeout(() => {
+            setTimeout(function() {
                 overlay.style.display = 'none';
-                if (confetti) confetti.stop();
+                if (game) game.stop();
             }, 1200);
         }
 
-        // Escape to close overlay
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && overlay.style.display === 'flex') {
                 dismissOverlay();
             }
@@ -1547,23 +2051,10 @@
             item.addEventListener('click', (e) => {
                 if (!e.target.closest('.queue-item-remove')) {
                     const position = parseInt(item.dataset.position);
-                    const queueItem = playerState.queue[position];
-                    if (typeof queueItem === 'number') {
-                        playTrack(queueItem);
-                    } else if (queueItem) {
-                        // Chillout track object — play directly
-                        playerState.currentIndex = position;
-                        musicTitle.textContent = queueItem.title;
-                        musicComposer.textContent = queueItem.composer;
-                        musicThumbImg.src = `https://img.youtube.com/vi/${queueItem.videoId}/mqdefault.jpg`;
-                        musicPlayerEl.classList.add('visible');
-                        if (playerState.ytReady && playerState.ytPlayer) {
-                            playerState.ytPlayer.loadVideoById(queueItem.videoId);
-                            playerState.isPlaying = true;
-                            iconPlay.style.display = 'none';
-                            iconPause.style.display = 'inline';
-                        }
-                        renderQueue();
+                    if (playerState.isChilloutSource) {
+                        playQueueTrack(position);
+                    } else {
+                        playTrack(position);
                     }
                 }
             });
