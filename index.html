@@ -987,5 +987,17 @@
         <p class="support-powered">Secure payments via Ko-fi</p>
       </div>
     </div>
+
+    <!-- Ko-fi Floating Widget (hidden for now) -->
+    <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
+    <script>
+      kofiWidgetOverlay.draw('antonabyzov', {
+        'type': 'floating-chat',
+        'floating-chat.donateButton.text': 'Support Anna',
+        'floating-chat.donateButton.background-color': '#d4a574',
+        'floating-chat.donateButton.text-color': '#fff'
+      });
+    </script>
+    <style>.floatingchat-container-wrap { display: none !important; }</style>
 </body>
 </html>
