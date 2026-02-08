@@ -951,15 +951,41 @@
     <script src="https://www.youtube.com/iframe_api"></script>
     <script src="script.js"></script>
 
-    <!-- Ko-fi Floating Widget -->
-    <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
-    <script>
-      kofiWidgetOverlay.draw('antonabyzov', {
-        'type': 'floating-chat',
-        'floating-chat.donateButton.text': 'Support Anna',
-        'floating-chat.donateButton.background-color': '#d4a574',
-        'floating-chat.donateButton.text-color': '#fff'
-      });
-    </script>
+    <!-- Custom Support Widget -->
+    <button class="support-float-btn" id="supportFloatBtn" title="Support Anna">
+      <img src="images/hero/anna_hero.jpeg" alt="Anna" class="support-float-avatar">
+      <span class="support-float-text">Support Anna</span>
+    </button>
+
+    <div class="support-overlay" id="supportOverlay">
+      <div class="support-backdrop" id="supportBackdrop"></div>
+      <div class="support-panel">
+        <button class="support-close" id="supportClose">&times;</button>
+        <div class="support-header">
+          <img src="images/hero/anna_hero.jpeg" alt="Anna Abyzova" class="support-avatar">
+          <h3 class="support-name">Anna Abyzova</h3>
+          <p class="support-tagline">Pianist, tutor & lifelong learner</p>
+        </div>
+        <p class="support-message">Your support helps Anna continue creating music, teaching, and pursuing her passions. Every coffee counts!</p>
+        <div class="support-amounts">
+          <a href="https://ko-fi.com/antonabyzov" target="_blank" rel="noopener noreferrer" class="support-amount-btn">
+            <span class="support-coffee-icon">&#9749;</span>
+            <span class="support-amount-label">Buy a Coffee</span>
+            <span class="support-amount-price">$3</span>
+          </a>
+          <a href="https://ko-fi.com/antonabyzov" target="_blank" rel="noopener noreferrer" class="support-amount-btn support-amount-popular">
+            <span class="support-coffee-icon">&#9749;&#9749;</span>
+            <span class="support-amount-label">Buy 3 Coffees</span>
+            <span class="support-amount-price">$9</span>
+          </a>
+          <a href="https://ko-fi.com/antonabyzov" target="_blank" rel="noopener noreferrer" class="support-amount-btn">
+            <span class="support-coffee-icon">&#9749;&#9749;&#9749;</span>
+            <span class="support-amount-label">Buy 5 Coffees</span>
+            <span class="support-amount-price">$15</span>
+          </a>
+        </div>
+        <p class="support-powered">Secure payments via Ko-fi</p>
+      </div>
+    </div>
 </body>
 </html>

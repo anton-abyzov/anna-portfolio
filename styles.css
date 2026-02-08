@@ -4157,3 +4157,219 @@ body.sidebar-expanded .library-panel {
         border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     }
 }
+
+/* Support widget — floating button */
+.support-float-btn {
+    position: fixed;
+    bottom: 100px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #d4a574;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    padding: 6px 16px 6px 6px;
+    border-radius: 50px;
+    box-shadow: 0 4px 16px rgba(212, 165, 116, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.support-float-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(212, 165, 116, 0.55);
+}
+
+.support-float-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.support-float-text {
+    white-space: nowrap;
+}
+
+/* Support widget — overlay */
+.support-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+}
+
+.support-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.support-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.support-panel {
+    position: relative;
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px 28px 24px;
+    max-width: 420px;
+    width: 92vw;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.support-overlay.active .support-panel {
+    transform: translateY(0) scale(1);
+}
+
+.support-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #999;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+    transition: color 0.15s;
+}
+
+.support-close:hover {
+    color: #333;
+}
+
+/* Support widget — header */
+.support-header {
+    margin-bottom: 16px;
+}
+
+.support-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #d4a574;
+    margin-bottom: 12px;
+}
+
+.support-name {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1d1d1f;
+}
+
+.support-tagline {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #6e6e73;
+}
+
+.support-message {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #444;
+    margin: 0 0 20px;
+}
+
+/* Support widget — amount buttons */
+.support-amounts {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.support-amount-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 16px 8px 12px;
+    border-radius: 14px;
+    background: #faf5f0;
+    color: #1d1d1f;
+    text-decoration: none;
+    transition: background 0.15s, transform 0.15s;
+    border: 2px solid transparent;
+}
+
+.support-amount-btn:hover {
+    background: #f3e8db;
+    transform: translateY(-2px);
+}
+
+.support-amount-btn.support-amount-popular {
+    border-color: #d4a574;
+    background: #faf0e4;
+}
+
+.support-coffee-icon {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.support-amount-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1d1d1f;
+}
+
+.support-amount-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #d4a574;
+}
+
+.support-powered {
+    margin: 0;
+    font-size: 11px;
+    color: #aeaeb2;
+}
+
+/* Support widget — responsive */
+@media (max-width: 480px) {
+    .support-float-btn {
+        bottom: 90px;
+        right: 16px;
+        padding: 4px;
+    }
+    .support-float-text {
+        display: none;
+    }
+    .support-float-avatar {
+        width: 44px;
+        height: 44px;
+    }
+    .support-panel {
+        padding: 24px 16px 20px;
+    }
+    .support-amounts {
+        flex-direction: column;
+    }
+    .support-amount-btn {
+        flex-direction: row;
+        gap: 10px;
+        justify-content: center;
+        padding: 12px;
+    }
+}

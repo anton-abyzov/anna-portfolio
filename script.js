@@ -2170,11 +2170,31 @@
     }
 
     // ============================================
+    // Support Widget
+    // ============================================
+    function initSupportWidget() {
+        const btn = document.getElementById('supportFloatBtn');
+        const overlay = document.getElementById('supportOverlay');
+        const backdrop = document.getElementById('supportBackdrop');
+        const close = document.getElementById('supportClose');
+        if (!btn || !overlay) return;
+
+        function open() { overlay.classList.add('active'); }
+        function shut() { overlay.classList.remove('active'); }
+
+        btn.addEventListener('click', open);
+        backdrop.addEventListener('click', shut);
+        close.addEventListener('click', shut);
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') shut(); });
+    }
+
+    // ============================================
     // Initialize
     // ============================================
     window.addEventListener('load', () => {
         document.body.classList.add('loaded');
         initBirthday();
+        initSupportWidget();
     });
 
 })();
